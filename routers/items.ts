@@ -119,7 +119,7 @@ itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res, next) => 
 
     await mysqlDb
       .getConnection()
-      .query('UPDATE items SET name = ?, category = ?, location = ?, description = ?, photo = ? WHERE id = ?;', [
+      .query('UPDATE items SET name = ?, category_id = ?, location_id = ?, description = ?, photo = ? WHERE id = ?;', [
         updatedItem.name,
         updatedItem.category_id,
         updatedItem.location_id,
