@@ -1,10 +1,7 @@
 import express from 'express';
-import multer from 'multer';
 import type { ResultSetHeader } from 'mysql2';
 import mysqlDb from '../mysqlDb';
 import type { Category, CategoryMutation } from '../types';
-
-const upload = multer();
 
 export const categoriesRouter = express.Router();
 
@@ -36,7 +33,7 @@ categoriesRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-categoriesRouter.post('/', upload.none(), async (req, res, next) => {
+categoriesRouter.post('/', async (req, res, next) => {
   try {
     const body = req.body;
 
@@ -99,7 +96,7 @@ categoriesRouter.delete('/:id', async (req, res, next) => {
   }
 });
 
-categoriesRouter.put('/:id', upload.none(), async (req, res, next) => {
+categoriesRouter.put('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
     const body = req.body;

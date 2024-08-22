@@ -1,10 +1,7 @@
 import express from 'express';
-import multer from 'multer';
 import type { ResultSetHeader } from 'mysql2';
 import mysqlDb from '../mysqlDb';
 import type { Location, LocationMutation } from '../types';
-
-const upload = multer();
 
 export const locationsRouter = express.Router();
 
@@ -36,7 +33,7 @@ locationsRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-locationsRouter.post('/', upload.none(), async (req, res, next) => {
+locationsRouter.post('/', async (req, res, next) => {
   try {
     const body = req.body;
 
@@ -99,7 +96,7 @@ locationsRouter.delete('/:id', async (req, res, next) => {
   }
 });
 
-locationsRouter.put('/:id', upload.none(), async (req, res, next) => {
+locationsRouter.put('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
     const body = req.body;
