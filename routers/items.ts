@@ -111,8 +111,8 @@ itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res, next) => 
 
     const updatedItem: ItemMutation = {
       name: body.name ? body.name : findResult[0].name,
-      category_id: body.category ? parseFloat(body.category) : findResult[0].category_id,
-      location_id: body.location ? parseFloat(body.location) : findResult[0].location_id,
+      category_id: body.category_id ? parseFloat(body.category_id) : findResult[0].category_id,
+      location_id: body.location_id ? parseFloat(body.location_id) : findResult[0].location_id,
       description: body.description ? body.description : findResult[0].description,
       photo: file ? file.filename : findResult[0].photo,
     };
