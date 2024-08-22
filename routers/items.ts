@@ -93,3 +93,45 @@ itemsRouter.delete('/:id', async (req, res, next) => {
     next(e);
   }
 });
+
+itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const body = req.body;
+    const file = req.file;
+
+    const findItem = await mysqlDb.getConnection().query('select * from items where id = ?;', [id]);
+    const findResult = findItem[0] as Item[];
+
+    if (findResult.length === 0) {
+      return res.status(404).send({
+        error: 'Item not found',
+      });
+    }
+
+    const updatedItem: ItemMutation = {
+      name: body.name ? body.name : findResult[0].name,
+      category: body.category ? parseFloat(body.category) : findResult[0].category,
+      location: body.location ? parseFloat(body.location) : findResult[0].location,
+      description: body.description ? body.description : findResult[0].description,
+      photo: file ? file.filename : findResult[0].photo,
+    };
+
+    await mysqlDb
+      .getConnection()
+      .query('UPDATE items SET name = ?, category = ?, location = ?, description = ?, photo = ? WHERE id = ?;', [
+        updatedItem.name,
+        updatedItem.category,
+        updatedItem.location,
+        updatedItem.description,
+        updatedItem.photo,
+        id,
+      ]);
+
+    const newItem = await mysqlDb.getConnection().query('select * from items where id = ?;', [id]);
+
+    return res.send(newItem[0]);
+  } catch (e) {
+    next(e);
+  }
+});
