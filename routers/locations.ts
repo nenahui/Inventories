@@ -80,7 +80,7 @@ locationsRouter.delete('/:id', async (req, res, next) => {
       });
     }
 
-    const related = await mysqlDb.getConnection().query('select * from items where location = ?;', [id]);
+    const related = await mysqlDb.getConnection().query('select * from items where location_id = ?;', [id]);
     const relatedResult = related[0] as Location[];
 
     if (relatedResult.length > 0) {

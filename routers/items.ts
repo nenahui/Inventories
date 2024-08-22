@@ -39,7 +39,7 @@ itemsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
     const body = req.body;
     const file = req.file;
 
-    if (!body.category || !body.location || !body.name) {
+    if (!body.category_id || !body.location_id || !body.name) {
       return res.status(400).send({
         error: 'Category, location and name fields are required',
       });
@@ -47,8 +47,8 @@ itemsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
 
     const item: ItemMutation = {
       name: body.name,
-      category: parseFloat(body.category),
-      location: parseFloat(body.location),
+      category_id: parseFloat(body.category),
+      location_id: parseFloat(body.location),
       description: body.description ? body.description : null,
       photo: file ? file.filename : null,
     };
@@ -57,8 +57,8 @@ itemsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
       .getConnection()
       .query('insert into items (name, category, location, description, photo) values(?, ?, ?, ?, ?);', [
         item.name,
-        item.category,
-        item.location,
+        item.category_id,
+        item.location_id,
         item.description,
         item.photo,
       ]);
@@ -111,8 +111,8 @@ itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res, next) => 
 
     const updatedItem: ItemMutation = {
       name: body.name ? body.name : findResult[0].name,
-      category: body.category ? parseFloat(body.category) : findResult[0].category,
-      location: body.location ? parseFloat(body.location) : findResult[0].location,
+      category_id: body.category ? parseFloat(body.category) : findResult[0].category_id,
+      location_id: body.location ? parseFloat(body.location) : findResult[0].location_id,
       description: body.description ? body.description : findResult[0].description,
       photo: file ? file.filename : findResult[0].photo,
     };
@@ -121,8 +121,8 @@ itemsRouter.put('/:id', imagesUpload.single('photo'), async (req, res, next) => 
       .getConnection()
       .query('UPDATE items SET name = ?, category = ?, location = ?, description = ?, photo = ? WHERE id = ?;', [
         updatedItem.name,
-        updatedItem.category,
-        updatedItem.location,
+        updatedItem.category_id,
+        updatedItem.location_id,
         updatedItem.description,
         updatedItem.photo,
         id,

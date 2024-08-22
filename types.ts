@@ -1,8 +1,8 @@
 export interface Item {
   id: number;
   name: string;
-  category: number;
-  location: number;
+  category_id: number;
+  location_id: number;
   description: string | null;
   date: string;
   photo: string | null;

@@ -3,6 +3,7 @@ import multer from 'multer';
 import type { ResultSetHeader } from 'mysql2';
 import mysqlDb from '../mysqlDb';
 import type { Category, CategoryMutation } from '../types';
+
 const upload = multer();
 
 export const categoriesRouter = express.Router();
@@ -79,7 +80,7 @@ categoriesRouter.delete('/:id', async (req, res, next) => {
       });
     }
 
-    const related = await mysqlDb.getConnection().query('select * from items where category = ?;', [id]);
+    const related = await mysqlDb.getConnection().query('select * from items where category_id = ?;', [id]);
     const relatedResult = related[0] as Category[];
 
     if (relatedResult.length > 0) {
