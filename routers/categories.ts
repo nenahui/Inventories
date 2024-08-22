@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import type { ResultSetHeader } from 'mysql2';
 import mysqlDb from '../mysqlDb';
 import type { Category, CategoryMutation } from '../types';
 const upload = multer();
@@ -29,6 +30,37 @@ categoriesRouter.get('/:id', async (req, res, next) => {
     }
 
     return res.send(items[0]);
+  } catch (e) {
+    next(e);
+  }
+});
+
+categoriesRouter.post('/', upload.none(), async (req, res, next) => {
+  try {
+    const body = req.body;
+
+    if (!body.name) {
+      return res.status(400).send({
+        error: 'Name is required',
+      });
+    }
+
+    const newCategory: CategoryMutation = {
+      name: body.name,
+      description: body.description ? body.description : null,
+    };
+
+    const insertResult = await mysqlDb
+      .getConnection()
+      .query('insert into categories (name, description) values (?, ?);', [newCategory.name, newCategory.description]);
+
+    const resultHeader = insertResult[0] as ResultSetHeader;
+    const getNewResult = await mysqlDb
+      .getConnection()
+      .query('select * from categories where id = ?;', [resultHeader.insertId]);
+    const categories = getNewResult[0] as Location[];
+
+    return res.send(categories[0]);
   } catch (e) {
     next(e);
   }
@@ -93,8 +125,9 @@ categoriesRouter.put('/:id', upload.none(), async (req, res, next) => {
         id,
       ]);
     const newCategory = await mysqlDb.getConnection().query('select * from categories where id = ?;', [id]);
+    const result = newCategory[0] as Category[];
 
-    return res.send(newCategory[0]);
+    return res.send(result[0]);
   } catch (e) {
     next(e);
   }

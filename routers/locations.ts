@@ -1,7 +1,9 @@
 import express from 'express';
 import multer from 'multer';
+import type { ResultSetHeader } from 'mysql2';
 import mysqlDb from '../mysqlDb';
 import type { Location, LocationMutation } from '../types';
+
 const upload = multer();
 
 export const locationsRouter = express.Router();
@@ -29,6 +31,37 @@ locationsRouter.get('/:id', async (req, res, next) => {
     }
 
     return res.send(items[0]);
+  } catch (e) {
+    next(e);
+  }
+});
+
+locationsRouter.post('/', upload.none(), async (req, res, next) => {
+  try {
+    const body = req.body;
+
+    if (!body.name) {
+      return res.status(400).send({
+        error: 'Name is required',
+      });
+    }
+
+    const newLocation: LocationMutation = {
+      name: body.name,
+      description: body.description ? body.description : null,
+    };
+
+    const insertResult = await mysqlDb
+      .getConnection()
+      .query('insert into locations (name, description) values (?, ?);', [newLocation.name, newLocation.description]);
+
+    const resultHeader = insertResult[0] as ResultSetHeader;
+    const getNewResult = await mysqlDb
+      .getConnection()
+      .query('select * from locations where id = ?;', [resultHeader.insertId]);
+    const locations = getNewResult[0] as Location[];
+
+    return res.send(locations[0]);
   } catch (e) {
     next(e);
   }
@@ -93,8 +126,9 @@ locationsRouter.put('/:id', upload.none(), async (req, res, next) => {
         id,
       ]);
     const newLocation = await mysqlDb.getConnection().query('select * from locations where id = ?;', [id]);
+    const result = newLocation[0] as Location[];
 
-    return res.send(newLocation[0]);
+    return res.send(result[0]);
   } catch (e) {
     next(e);
   }
