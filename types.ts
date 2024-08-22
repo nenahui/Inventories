@@ -1,4 +1,4 @@
-export interface Items {
+export interface Item {
   id: number;
   name: string;
   category: number;
@@ -7,3 +7,5 @@ export interface Items {
   date: string;
   photo: string | null;
 }
+
+export type ItemMutation = Omit<Item, 'id' | 'date'>;
