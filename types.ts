@@ -9,3 +9,15 @@ export interface Item {
 }
 
 export type ItemMutation = Omit<Item, 'id' | 'date'>;
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
+export interface Location {
+  id: number;
+  name: string;
+  description: string | null;
+}

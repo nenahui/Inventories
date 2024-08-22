@@ -4,9 +4,9 @@ import { imagesUpload } from '../multer';
 import mysqlDb from '../mysqlDb';
 import type { Item, ItemMutation } from '../types';
 
-export const inventoriesRouter = express.Router();
+export const itemsRouter = express.Router();
 
-inventoriesRouter.get('/', async (req, res, next) => {
+itemsRouter.get('/', async (req, res, next) => {
   try {
     const result = await mysqlDb.getConnection().query('select * from items;');
     const items = result[0] as Item[];
@@ -16,7 +16,7 @@ inventoriesRouter.get('/', async (req, res, next) => {
   }
 });
 
-inventoriesRouter.get('/:id', async (req, res, next) => {
+itemsRouter.get('/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
     const result = await mysqlDb.getConnection().query('select * from items where id = ?;', [id]);
@@ -34,7 +34,7 @@ inventoriesRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-inventoriesRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
+itemsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
   try {
     const body = req.body;
     const file = req.file;
@@ -69,6 +69,26 @@ inventoriesRouter.post('/', imagesUpload.single('photo'), async (req, res, next)
     const products = getNewResult[0] as Item[];
 
     return res.send(products[0]);
+  } catch (e) {
+    next(e);
+  }
+});
+
+itemsRouter.delete('/:id', async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const item = await mysqlDb.getConnection().query('select * from items where id = ?;', [id]);
+    const findResult = item[0] as Item[];
+
+    if (findResult.length === 0) {
+      return res.status(404).send({
+        error: 'Item not found',
+      });
+    }
+
+    await mysqlDb.getConnection().query('delete from items where id = ?;', [id]);
+
+    return res.send(item[0]);
   } catch (e) {
     next(e);
   }
