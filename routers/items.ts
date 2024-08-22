@@ -47,15 +47,15 @@ itemsRouter.post('/', imagesUpload.single('photo'), async (req, res, next) => {
 
     const item: ItemMutation = {
       name: body.name,
-      category_id: parseFloat(body.category),
-      location_id: parseFloat(body.location),
+      category_id: parseFloat(body.category_id),
+      location_id: parseFloat(body.location_id),
       description: body.description ? body.description : null,
       photo: file ? file.filename : null,
     };
 
     const insertResult = await mysqlDb
       .getConnection()
-      .query('insert into items (name, category, location, description, photo) values(?, ?, ?, ?, ?);', [
+      .query('insert into items (name, category_id, location_id, description, photo) values(?, ?, ?, ?, ?);', [
         item.name,
         item.category_id,
         item.location_id,
